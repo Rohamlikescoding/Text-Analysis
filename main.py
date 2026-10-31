@@ -1,7 +1,7 @@
 import re
 
 
-input = """Python is a versatile, high-level programming language loved by developers worldwide.
+input_text = """Python is a versatile, high-level programming language loved by developers worldwide.
 Why do so many programmers start with Python?
 Because Python prioritizes readability, simplicity, and clear syntax!
 Whether you want to build web applications, analyze data, or automate tedious tasks, Python has the tools you need.
@@ -9,8 +9,6 @@ As you write more Python code, you will discover that writing code in Python fee
 Programming takes practice, time, and patience.
 So keep writing Python, keep building projects, and keep solving real problems.
 Remember: Great programmers are not born; they are made through daily practice with real code!"""
-
-
 
 
 def print_hi(text):
@@ -24,10 +22,8 @@ def calc_words(text):
 def avg_word_length(words):
     temp = [ len(word) for word in words ]
     result = 0 if len(temp)==0 else float(sum(temp)/len(temp))
-    print("avg word length:",result)
+    print("avg word length:",round(result))
     return result
-
-
 
 def calc_character(text):
     characters = text.replace(" ","")
@@ -37,35 +33,31 @@ def calc_character(text):
 def calc_lines(text):
     lines = text.split("\n")
     print("total lines:",len(lines))
+    return lines
 
 def calc_sentences(text):
     sentences = len(re.findall(r"[^?!.][?!.]", text))
-
     print("total sentences:",sentences)
+    return sentences
 
 def word_frequency(text):
-    words = text.lower().replace("?","").replace("!","").replace(".", "").replace(",", "").split()
+    words= re.sub(r"[^\w\s]","" ,text.lower()).split()
     frequency = {}
     for word in words:
         if word in frequency:
             frequency[word] += 1
         elif word not in frequency:
             frequency[word] = 1
-
     sorted_frequency = dict(sorted(frequency.items(), key=lambda x: x[1] , reverse=True))
-    print(frequency)
-    # print(sorted_frequency)
-
-    print(list(sorted_frequency)[0:5])
-    return frequency
-
+    print("words frequency:", frequency)
+    print("top five most common words:",list(sorted_frequency)[0:5])
+    return [frequency, sorted_frequency]
 
 if __name__ == '__main__':
-    print_hi(input)
-    total_words = calc_words(input)
+    print_hi(input_text)
+    total_words = calc_words(input_text)
+    calc_character(input_text)
+    calc_lines(input_text)
+    calc_sentences(input_text)
     avg_word_length(total_words)
-    calc_character(input)
-    calc_lines(input)
-    calc_sentences(input)
-    word_frequency(input)
-
+    word_frequency(input_text)

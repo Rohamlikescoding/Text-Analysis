@@ -1,7 +1,7 @@
 import re
 
 
-input_text = """Python is a versatile, high-level programming language loved by developers worldwide.
+default_text = """Python is a versatile, high-level programming language loved by developers worldwide.
 Why do so many programmers start with Python?
 Because Python prioritizes readability, simplicity, and clear syntax!
 Whether you want to build web applications, analyze data, or automate tedious tasks, Python has the tools you need.
@@ -11,53 +11,50 @@ So keep writing Python, keep building projects, and keep solving real problems.
 Remember: Great programmers are not born; they are made through daily practice with real code!"""
 
 
-def print_hi(text):
-    print(f'{text}')
-
 def calc_words(text):
-    words = text.lower().split()
-    print("total words:",len(words))
-    return words
+    return len(text.lower().split())
 
-def avg_word_length(words):
-    temp = [ len(word) for word in words ]
-    result = 0 if len(temp)==0 else float(sum(temp)/len(temp))
-    print("avg word length:",round(result))
-    return result
+def avg_word_length(text):
+    words = re.sub(r"[^\w\s]", "", text.lower()).split()
+    words_list= [len(word) for word in words]
+    words_result = 0 if len(words_list)==0 else round(sum(words_list)/len(words_list),2)
+    return words_result
 
 def calc_character(text):
-    characters = text.replace(" ","")
-    print("characters with space:",len(text))
-    print("characters without space:",len(characters))
+    characters = len(text.replace(" ","").replace("\n",""))
+    return characters
 
 def calc_lines(text):
     lines = text.split("\n")
-    print("total lines:",len(lines))
-    return lines
+    return len(lines)
 
 def calc_sentences(text):
-    sentences = len(re.findall(r"[^?!.][?!.]", text))
-    print("total sentences:",sentences)
-    return sentences
+    sentences = re.findall(r"[.!?]+", text)
+    return len(sentences)
 
-def word_frequency(text):
+def word_frequency(text, top_words=5):
     words= re.sub(r"[^\w\s]","" ,text.lower()).split()
     frequency = {}
     for word in words:
         if word in frequency:
             frequency[word] += 1
-        elif word not in frequency:
+        else:
             frequency[word] = 1
-    sorted_frequency = dict(sorted(frequency.items(), key=lambda x: x[1] , reverse=True))
-    print("words frequency:", frequency)
-    print("top five most common words:",list(sorted_frequency)[0:5])
-    return [frequency, sorted_frequency]
+    sorted_frequency = sorted(frequency.items(), key=lambda x: x[1] , reverse=True)
+    return {"all": frequency, "top": dict(sorted_frequency[:top_words])}
+
+def calculate(text):
+    words=calc_words(text)
+    characters_wo=calc_character(text)
+    characters=len(text)
+    lines=calc_lines(text)
+    sentences=calc_sentences(text)
+    avg_word=avg_word_length(text)
+    frequency=word_frequency(text)
+
+    return {"text":text, "charactersWithOutSpace" :characters_wo, "charactersWithSpace":characters, "lines": lines, "sentences": sentences, "avgWords": avg_word, "frequency": frequency['all'], "topFrequency": frequency['top'], "words": words}
 
 if __name__ == '__main__':
-    print_hi(input_text)
-    total_words = calc_words(input_text)
-    calc_character(input_text)
-    calc_lines(input_text)
-    calc_sentences(input_text)
-    avg_word_length(total_words)
-    word_frequency(input_text)
+    result = calculate(default_text)
+    for key, value in result.items():
+        print(f'{key}: {value}')

@@ -54,7 +54,41 @@ def calculate(text):
 
     return {"text":text, "charactersWithOutSpace" :characters_wo, "charactersWithSpace":characters, "lines": lines, "sentences": sentences, "avgWords": avg_word, "frequency": frequency['all'], "topFrequency": frequency['top'], "words": words}
 
+def handle_file(file_url):
+    try:
+        with open(file_url , "r", encoding="utf-8") as file:
+            return calculate(file.read())
+    except FileNotFoundError :
+        continued = str(input("file not found :(\nDo you want to continue (y/n/w for wrong option)?"))
+        if continued == "y":
+            return handle_file(str(input("Enter your file's CORRECT path:")))
+        elif continued == "w":
+            return handle_user_input(user_input_function(""))
+        else:
+            return {"End of the program":"Bye!"}
+
+
+def handle_user_input(option):
+    if option == "1":
+        return calculate(str(input("Enter your text:\n")))
+    elif option == "2":
+        return handle_file(str(input("Enter your file's path:\n")))
+    elif option == "3":
+        return calculate(default_text)
+    else:
+        return handle_user_input(user_input_function("Invalid option! please choose correctly!:\n"))
+
+
+def user_input_function(text):
+    if text == "":
+        input_result = str(input("Choose what do you want to do:\n 1)Provide desired text manually\n 2)Provide a file path (.txt)\n 3)Use default text\nEnter your choice Number:"))
+    else:
+        input_result = str(input(text))
+    return input_result
+
 if __name__ == '__main__':
-    result = calculate(default_text)
+    result =handle_user_input(user_input_function(""))
+
+    # result = calculate(default_text)
     for key, value in result.items():
         print(f'{key}: {value}')

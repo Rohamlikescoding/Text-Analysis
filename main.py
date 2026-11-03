@@ -52,42 +52,56 @@ def calculate(text):
     avg_word=avg_word_length(text)
     frequency=word_frequency(text)
 
-    return {"text":text, "charactersWithOutSpace" :characters_wo, "charactersWithSpace":characters, "lines": lines, "sentences": sentences, "avgWords": avg_word, "frequency": frequency['all'], "topFrequency": frequency['top'], "words": words}
+    return {"text":text, "characters_without_space" :characters_wo, "characters_with_space":characters, "lines": lines, "sentences": sentences, "avg_word_length": avg_word, "frequency": frequency['all'], "top_word_frequency": frequency['top'], "words": words}
+
+def read_file(file_url):
+    with open(file_url, "r", encoding="utf-8") as file:
+        return calculate(file.read())
+
+def file_choice():
+        continued = input("file not found :(\nDo you want to continue? \n (y)try another file\n (m)main menu\ntype anything else to exit: ").lower().strip()
+        return continued
 
 def handle_file(file_url):
-    try:
-        with open(file_url , "r", encoding="utf-8") as file:
-            return calculate(file.read())
-    except FileNotFoundError :
-        continued = str(input("file not found :(\nDo you want to continue (y/n/w for wrong option)?"))
-        if continued == "y":
-            return handle_file(str(input("Enter your file's CORRECT path:")))
-        elif continued == "w":
-            return handle_user_input(user_input_function(""))
+    while True:
+        try:
+            return read_file(file_url)
+        except FileNotFoundError :
+            continued= file_choice()
+            if continued == "y":
+                file_url = input("Enter your file's CORRECT path:")
+            elif continued == "m":
+                return  "menu"
+            else:
+                return {"End of the program": "Bye!"}
+
+
+def handle_user_input():
+    while True:
+        option = user_input_function("")
+        if option == "1":
+            return calculate(input("Enter your text:\n"))
+        elif option == "2":
+            continued =handle_file(input("Enter your file's path:\n"))
+            if continued== "menu":
+                continue
+            else:
+                return continued
+        elif option == "3":
+            return calculate(default_text)
         else:
-            return {"End of the program":"Bye!"}
-
-
-def handle_user_input(option):
-    if option == "1":
-        return calculate(str(input("Enter your text:\n")))
-    elif option == "2":
-        return handle_file(str(input("Enter your file's path:\n")))
-    elif option == "3":
-        return calculate(default_text)
-    else:
-        return handle_user_input(user_input_function("Invalid option! please choose correctly!:\n"))
+            print("Invalid option! please choose correctly!")
 
 
 def user_input_function(text):
     if text == "":
-        input_result = str(input("Choose what do you want to do:\n 1)Provide desired text manually\n 2)Provide a file path (.txt)\n 3)Use default text\nEnter your choice Number:"))
+        input_result = input("Choose what do you want to do:\n 1)Provide desired text manually\n 2)Provide a file path (.txt)\n 3)Use default text\nEnter your choice Number:")
     else:
-        input_result = str(input(text))
+        input_result = input(text)
     return input_result
 
 if __name__ == '__main__':
-    result =handle_user_input(user_input_function(""))
+    result =handle_user_input()
 
     # result = calculate(default_text)
     for key, value in result.items():

@@ -1,3 +1,4 @@
+import click
 import re
 
 
@@ -43,20 +44,21 @@ def word_frequency(text, top_words=5):
     sorted_frequency = sorted(frequency.items(), key=lambda x: x[1] , reverse=True)
     return {"all": frequency, "top": dict(sorted_frequency[:top_words])}
 
-def calculate(text):
+
+def calculate(text, top_words=5):
     words=calc_words(text)
     characters_wo=calc_character(text)
     characters=len(text)
     lines=calc_lines(text)
     sentences=calc_sentences(text)
     avg_word=avg_word_length(text)
-    frequency=word_frequency(text)
+    frequency=word_frequency(text, top_words)
 
     return {"text":text, "characters_without_space" :characters_wo, "characters_with_space":characters, "lines": lines, "sentences": sentences, "avg_word_length": avg_word, "frequency": frequency['all'], "top_word_frequency": frequency['top'], "words": words}
 
 def read_file(file_url):
     with open(file_url, "r", encoding="utf-8") as file:
-        return calculate(file.read())
+        return file.read()
 
 def file_choice():
         continued = input("file not found :(\nDo you want to continue? \n (y)try another file\n (m)main menu\ntype anything else to exit: ").lower().strip()
@@ -65,7 +67,7 @@ def file_choice():
 def handle_file(file_url):
     while True:
         try:
-            return read_file(file_url)
+            return calculate((read_file(file_url)))
         except FileNotFoundError :
             continued= file_choice()
             if continued == "y":
@@ -100,9 +102,58 @@ def user_input_function(text):
         input_result = input(text)
     return input_result
 
-if __name__ == '__main__':
-    result =handle_user_input()
+def handle_punctuation(text):
+    return re.sub(r"[^\w\s]", "", text)
 
-    # result = calculate(default_text)
-    for key, value in result.items():
-        print(f'{key}: {value}')
+def handle_uppercase(text):
+    return text.upper()
+
+def handle_lowercase(text):
+    return text.lower()
+
+def handle_capitalize(text):
+    return text.title()
+
+
+def text_transform(text, uppercase, lowercase, capitalize, clean_punctuation):
+    if uppercase:
+        text = handle_uppercase(text)
+
+    if lowercase:
+        text = handle_lowercase(text)
+
+    if capitalize:
+        text = handle_capitalize(text)
+
+    if clean_punctuation:
+        text = handle_punctuation(text)
+    return text
+
+
+
+
+@click.command()
+@click.option('--top-words', default=5, help='number of most frequent words')
+@click.argument("file", default="TextFile.txt", help='file path')
+@click.option("--uppercase", is_flag=True ,help='use uppercase')
+@click.option("--lowercase", is_flag=True ,help='use lowercase')
+@click.option("--capitalize", is_flag=True ,help='use capitalize')
+@click.option("--clean-punctuation", is_flag=True ,help='clean punctuation')
+@click.option("--stats", is_flag=True ,help='receive stats')
+
+
+def cli(stats,top_words, file, uppercase, lowercase, capitalize, clean_punctuation):
+
+    text=text_transform(read_file(file), uppercase, lowercase, capitalize, clean_punctuation)
+
+    if stats:
+        result =calculate(text, top_words)
+        for key, value in result.items():
+            click.echo(click.style(key, fg="cyan", bold=True))
+            click.echo(click.style(str(value), fg="white"))
+
+    click.echo(click.style(text, fg="green", bold=True))
+
+
+if __name__ == '__main__':
+    cli()

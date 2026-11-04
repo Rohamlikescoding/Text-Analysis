@@ -1,4 +1,5 @@
 import re
+import sys
 
 
 default_text = """Python is a versatile, high-level programming language loved by developers worldwide.
@@ -56,31 +57,46 @@ def calculate(text):
 
 def read_file(file_url):
     with open(file_url, "r", encoding="utf-8") as file:
-        return calculate(file.read())
+        return file.read()
 
 def file_choice():
-        continued = input("file not found :(\nDo you want to continue? \n (y)try another file\n (m)main menu\ntype anything else to exit: ").lower().strip()
+        continued = input("Error related to the file, make sure path or unicode is correct :(\nDo you want to continue? \n (y)try another file\n (m)main menu\ntype anything else to exit: ").lower().strip()
         return continued
 
 def handle_file(file_url):
     while True:
         try:
-            return read_file(file_url)
-        except FileNotFoundError :
+            return calculate(read_file(file_url))
+        except (FileNotFoundError, UnicodeDecodeError):
             continued= file_choice()
             if continued == "y":
-                file_url = input("Enter your file's CORRECT path:")
+                file_url = input("Enter your CORRECT file:")
             elif continued == "m":
                 return  "menu"
             else:
                 return {"End of the program": "Bye!"}
 
 
+def handle_user_text_input():
+    print("Enter your text (Press Ctrl+D on Linux/macOS or Ctrl+Z on Windows to stop):")
+    lines = sys.stdin.readlines()
+    text = ''.join(lines)
+    return text
+
+
+def user_input_function(text):
+    if text == "":
+        input_result = input("Choose what do you want to do:\n 1)Provide desired text manually\n 2)Provide a file path (.txt)\n 3)Use default text\nEnter your choice Number:")
+    else:
+        input_result = input(text)
+    return input_result
+
 def handle_user_input():
     while True:
         option = user_input_function("")
         if option == "1":
-            return calculate(input("Enter your text:\n"))
+            text= handle_user_text_input()
+            return calculate(text)
         elif option == "2":
             continued =handle_file(input("Enter your file's path:\n"))
             if continued== "menu":
@@ -93,16 +109,9 @@ def handle_user_input():
             print("Invalid option! please choose correctly!")
 
 
-def user_input_function(text):
-    if text == "":
-        input_result = input("Choose what do you want to do:\n 1)Provide desired text manually\n 2)Provide a file path (.txt)\n 3)Use default text\nEnter your choice Number:")
-    else:
-        input_result = input(text)
-    return input_result
 
 if __name__ == '__main__':
     result =handle_user_input()
 
-    # result = calculate(default_text)
     for key, value in result.items():
         print(f'{key}: {value}')

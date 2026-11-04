@@ -143,16 +143,29 @@ def text_transform(text, uppercase, lowercase, capitalize, clean_punctuation):
 
 
 def cli(stats,top_words, file, uppercase, lowercase, capitalize, clean_punctuation):
+    ctx = click.get_current_context()
+    top_words_provided = (
+            ctx.get_parameter_source("top_words")
+            == click.core.ParameterSource.COMMANDLINE
+    )
 
-    text=text_transform(read_file(file), uppercase, lowercase, capitalize, clean_punctuation)
+    is_value =  uppercase or lowercase or capitalize or clean_punctuation or stats
+    if file == "TextFile.txt" and top_words==5  and not is_value:
+        result =handle_user_input()
+    else:
+        text=text_transform(read_file(file), uppercase, lowercase, capitalize, clean_punctuation)
+        if stats:
+            result =calculate(text, top_words)
+        elif top_words_provided:
+            result = {"stats":calculate(text, top_words)['top_word_frequency']}
+            print(result)
+        else:
+            result = {"text:": text}
 
-    if stats:
-        result =calculate(text, top_words)
-        for key, value in result.items():
-            click.echo(click.style(key, fg="cyan", bold=True))
-            click.echo(click.style(str(value), fg="white"))
+    for key, value in result.items():
+        click.echo(click.style(key, fg="cyan", bold=True))
+        click.echo(click.style(str(value), fg="white"))
 
-    click.echo(click.style(text, fg="green", bold=True))
 
 
 if __name__ == '__main__':

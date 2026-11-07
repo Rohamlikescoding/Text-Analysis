@@ -43,6 +43,12 @@ def calculate(text, top_words=5):
 
     return {"text":text, "characters_without_space" :characters_wo, "characters_with_space":characters, "lines": lines, "sentences": sentences, "avg_word_length": avg_word, "frequency": frequency['all'], "top_word_frequency": frequency['top'], "words": words}
 
+def handle_summary(text):
+    lines = calc_lines(text)
+    sentences = calc_sentences(text)
+    avg_word = avg_word_length(text)
+    return {"lines": lines, "sentences": sentences, "avg_word_length": avg_word}
+
 
 def handle_punctuation(text):
     return re.sub(r"[^\w\s]", "", text)

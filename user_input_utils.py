@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from text_analysis_utils import calculate
 from file_handling_utils import handle_file
 from file_handling_utils import read_file
@@ -25,11 +27,11 @@ def handle_user_input():
             return calculate(text)
         elif option == "2":
             continued =handle_file(input("Enter your file's path:\n"))
-            if continued== "menu":
+            if continued==None:
                 continue
             else:
                 return continued
         elif option == "3":
-            return calculate(read_file('default.txt'))
+            return calculate(read_file(Path(__file__).parent / "default.txt"))
         else:
             print("Invalid option! please choose correctly!")

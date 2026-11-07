@@ -17,6 +17,6 @@ def handle_file(file_url):
             if continued == "y":
                 file_url = input("Enter your CORRECT file:")
             elif continued == "m":
-                return  "menu"
+                return  None
             else:
                 return {"End of the program": "Bye!"}

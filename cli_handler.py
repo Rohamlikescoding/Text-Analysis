@@ -9,7 +9,6 @@ from text_analysis_utils import text_transform
 
 @click.command()
 @click.argument("filename", default=None, required=False ,type=click.Path(exists=True, dir_okay=False))
-# @click.argument("filename", default="default.txt", type=click.Path(exists=True, dir_okay=False))
 @click.option('--top-words', default=5, help='number of most frequent words' , type=click.IntRange(min=1))
 @click.option("--uppercase", is_flag=True ,help='use uppercase')
 @click.option("--lowercase", is_flag=True ,help='use lowercase')
@@ -22,7 +21,9 @@ from text_analysis_utils import text_transform
 def cli(stats,top_words, filename, uppercase, lowercase, capitalize, clean_punctuation, summary):
     """Text analysis tool.
 
-       FILE is the path to the file to be analyzed (default: default.txt).
+       Enter the path to the file to be analyzed like the line below.
+
+       python main.py {From/where/fileurl.txt} --stats
     """
 
     ctx = click.get_current_context()
@@ -37,22 +38,26 @@ def cli(stats,top_words, filename, uppercase, lowercase, capitalize, clean_punct
     if not filename and not is_value:
         result =handle_user_input()
     elif not filename and is_value:
-        click.echo(click.style("you can not use cli commands without a file!", fg="red"))
+        click.secho("you can not use cli commands without a file!", fg="red")
         return
     else:
-        text =read_file(filename)
+        try:
+            text =read_file(filename)
 
-        if stats:
-            result = calculate(text,top_words)
-        elif summary:
-            result = handle_summary(text)
-        elif top_words_provided:
-            result = {"stats":calculate(text,top_words)['top_word_frequency']}
-        else:
-            text =text_transform( text,uppercase, lowercase, capitalize,clean_punctuation)
-            result = {"text": text}
+            if stats:
+                result = calculate(text,top_words)
+            elif summary:
+                result = handle_summary(text)
+            elif top_words_provided:
+                result = {"stats":calculate(text,top_words)['top_word_frequency']}
+            else:
+                text =text_transform( text,uppercase, lowercase, capitalize,clean_punctuation)
+                result = {"text": text}
+        except (OSError, UnicodeDecodeError) as e:
+                click.secho(f"Can't read {filename}: {e}", fg="red", err=True)
+                ctx.exit(1)
 
     for key, value in result.items():
-        click.echo(click.style(key, fg="cyan", bold=True))
-        click.echo(click.style(str(value), fg="white"))
+        click.secho(key, fg="cyan", bold=True)
+        click.secho(str(value), fg="white")
 

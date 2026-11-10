@@ -1,9 +1,8 @@
-
 import click
-from user_input_utils import handle_user_input
+
 from file_handling_utils import read_file
-from text_analysis_utils import calculate, handle_summary
-from text_analysis_utils import text_transform
+from text_analysis_utils import calculate, handle_summary,text_transform
+from user_input_utils import handle_user_input
 
 
 
@@ -32,6 +31,13 @@ def cli(stats,top_words, filename, uppercase, lowercase, capitalize, clean_punct
             == click.core.ParameterSource.COMMANDLINE
     )
 
+    if sum([lowercase, uppercase, capitalize])> 1:
+        click.secho("Can't use lowercase, uppercase and capitalize at the same time!",fg="red", err=True)
+        ctx.exit(2)
+    if stats and summary:
+        click.secho("Can't use stats and summary at the same time!", fg="red", err=True)
+        ctx.exit(2)
+
     is_value =  uppercase or lowercase or capitalize or clean_punctuation or stats or summary or top_words_provided
 
 
@@ -41,6 +47,7 @@ def cli(stats,top_words, filename, uppercase, lowercase, capitalize, clean_punct
         click.secho("you can not use cli commands without a file!", fg="red")
         return
     else:
+
         try:
             text =read_file(filename)
 

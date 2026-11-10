@@ -1,9 +1,8 @@
+import sys
 from pathlib import Path
 
+from file_handling_utils import handle_file, read_file
 from text_analysis_utils import calculate
-from file_handling_utils import handle_file
-from file_handling_utils import read_file
-import sys
 
 def handle_user_text_input():
     print("Enter your text (Press Ctrl+D on Linux/macOS or Ctrl+Z on Windows to stop):")

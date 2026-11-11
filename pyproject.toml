@@ -1,0 +1,7 @@
+[tool.fastapi]
+entrypoint = "api:app"
+
+[dependency-groups]
+dev = [
+    "python-multipart>=0.0.33",
+]

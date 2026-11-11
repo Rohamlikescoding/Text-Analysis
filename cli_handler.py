@@ -1,10 +1,8 @@
-
 import click
-from user_input_utils import handle_user_input
-from file_handling_utils import read_file
-from text_analysis_utils import calculate, handle_summary
-from text_analysis_utils import text_transform
 
+from file_handling_utils import read_file
+from text_analysis_utils import calculate, handle_summary,text_transform
+from user_input_utils import handle_user_input
 
 
 @click.command()

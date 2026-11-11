@@ -41,7 +41,9 @@ def calculate(text, top_words=5):
     avg_word=avg_word_length(text)
     frequency=word_frequency(text, top_words)
 
-    return {"text":text, "characters_without_space" :characters_wo, "characters_with_space":characters, "lines": lines, "sentences": sentences, "avg_word_length": avg_word, "frequency": frequency['all'], "top_word_frequency": frequency['top'], "words": words}
+    return {"text": text, "characters_without_space": characters_wo, "characters_with_space": characters,
+            "lines": lines, "sentences": sentences, "avg_word_length": avg_word, "frequency": frequency['all'],
+            "top_word_frequency": frequency['top'], "words": words}
 
 def handle_summary(text):
     lines = calc_lines(text)
@@ -63,7 +65,7 @@ def handle_capitalize(text):
     return text.title()
 
 
-def text_transform(text, uppercase, lowercase, capitalize, clean_punctuation):
+def text_transform(text, uppercase=False , lowercase=False, capitalize=False, clean_punctuation=False):
     if uppercase:
         text = handle_uppercase(text)
 

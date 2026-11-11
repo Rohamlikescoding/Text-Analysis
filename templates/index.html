@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <style>
+        {% include 'styles.css' %}
+    </style>
+
+    <title>Text Analysis</title>
+</head>
+<body>
+<header>
+    <nav>
+        <h2>
+
+            Text analysis
+        </h2>
+
+        <h2>Hello {{name}}</h2>
+    </nav>
+</header>
+<main>
+    <div id="input-tabs">
+        <input class="act-radio" type="radio" name="act" id="act-1" {% if active_tab!='file' %} checked {% endif %} value="text"/>
+        <input class="act-radio" type="radio" name="act" id="act-2" {% if active_tab=='file' %} checked {% endif %} value="file"/>
+
+        <div class="act-rail" data-testid="act-rail">
+            <label for="act-1">Text</label>
+            <label for="act-2">File</label>
+        </div>
+        <div class="act-panels">
+            <article class="act-panel" id="act-panel-1">
+                <h3>Paste your text</h3>
+                <form class="text-form" method="post" action="/analyze/text">
+                    <label for="text-input">Your text</label>
+                    <textarea id="text-input" name="text" rows="8"
+                              placeholder="Type or paste anything here…" required></textarea>
+                    <div class="transform-buttons">
+                        <label><input type="radio" name="transform" value="" checked /> No transform</label>
+                        <label><input type="radio" name="transform" value="uppercase" /> Uppercase</label>
+                        <label><input type="radio" name="transform" value="lowercase" /> Lowercase</label>
+                        <label><input type="radio" name="transform" value="capitalize" /> Capitalize</label>
+                        <label><input type="radio" name="transform" value="clean-punctuation" /> Clean punctuation</label>
+                    </div>
+                    <div class="stats-buttons">
+                        <label><input type="radio" name="statistic" value="" checked /> No statistic</label>
+                        <label><input type="radio" name="statistic" value="stats" /> Stats</label>
+                        <label><input type="radio" name="statistic" value="summary" /> Summary</label>
+                    </div>
+                    <div class="frequent">
+                        <label>Frequent  <input type="number" name="frequent" value="frequent" min="1" max="10"/></label>
+                    </div>
+                    <button type="submit">Send</button>
+                </form>
+            </article>
+            <article class="act-panel" id="act-panel-2">
+                <h3>Upload your file</h3>
+                <form class="file-form" method="post" action="/analyze/file" enctype="multipart/form-data">
+                    <label for="file-input">File</label>
+                    <input type="file" id="file-input" name="file" accept=".txt,text/plain" required/>
+                    <div class="transform-buttons">
+                        <label><input type="radio" name="transform" value="" checked /> No transform</label>
+                        <label><input type="radio" name="transform" value="uppercase" /> Uppercase</label>
+                        <label><input type="radio" name="transform" value="lowercase" /> Lowercase</label>
+                        <label><input type="radio" name="transform" value="capitalize" /> Capitalize</label>
+                        <label><input type="radio" name="transform" value="clean-punctuation" /> Clean punctuation</label>
+                    </div>
+                    <div class="stats-buttons">
+                        <label><input type="radio" name="statistic" value="" checked /> No statistic</label>
+                        <label><input type="radio" name="statistic" value="stats" /> Stats</label>
+                        <label><input type="radio" name="statistic" value="summary" /> Summary</label>
+                    </div>
+                    <div class="frequent">
+                        <label>Frequent  <input type="number" name="frequent" value="frequent" min="1" max="10"/></label>
+                    </div>
+                    <button type="submit">Upload</button>
+                </form>
+
+            </article>
+        </div>
+
+    </div>
+    <section>
+        {% if file_name %}
+            <h3>{{file_name}}</h3>
+        {% endif %}
+        {% if transformed is defined %}
+        <div id="transformed" class="card">
+            <h2>Transformed text</h2>
+            <pre style="white-space: pre-wrap; margin: 0">{{ transformed }}</pre>
+        </div>
+        {% endif %}
+
+        {% if summary is defined %}
+    <div id="summary" class="card">
+        <h2>Summary</h2>
+        <div class="summary-cards">
+            <div class="summary-card">
+                <span class="summary-value">{{ summary.lines }}</span>
+                <span class="summary-label">Lines</span>
+            </div>
+            <div class="summary-card">
+                <span class="summary-value">{{ summary.sentences }}</span>
+                <span class="summary-label">Sentences</span>
+            </div>
+            <div class="summary-card">
+                <span class="summary-value">{{ "%.2f"|format(summary.avg_word_length) }}</span>
+                <span class="summary-label">Avg. word length</span>
+            </div>
+        </div>
+    </div>
+        {% endif %}
+        {% if result %}
+        <div id="result">
+            <div class="result-header">
+                <h2>All stats</h2>
+            </div>
+            <div class="container">
+                <div class="stats">
+                    <h3>Stats</h3>
+                    <div>
+                        <div class="stat"><p>Words</p><span>{{ result.words }}</span></div>
+                        <div class="stat"><p>Characters</p><span>{{ result.characters_with_space }}</span></div>
+                        <div class="stat"><p>Characters without spaces</p>
+                            <span>{{ result.characters_without_space }}</span></div>
+                        <div class="stat"><p>Lines</p><span>{{ result.lines }}</span></div>
+                        <div class="stat"><p>Sentences</p><span>{{ result.sentences }}</span></div>
+                        <div class="stat"><p>Avg. word length</p>
+                            <span>{{ "%.2f"|format(result.avg_word_length) }}</span></div>
+                    </div>
+                </div>
+                <!--                <h3>Top words</h3>-->
+                {% set max_count = result.top_word_frequency.values()|max or 1 %}
+                <table class="freq">
+                    <tr>
+                        <th><h3>Top words</h3></th>
+                    </tr>
+                    {% for word, count in result.top_word_frequency.items() %}
+                    <tr>
+                        <td>{{ word }}</td>
+                        <td class="bar">
+                            <div style="width:{{ (count / max_count * 100)|round }}%"></div>
+                        </td>
+                        <td>{{ count }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                <details>
+                    <summary>All word frequencies ({{ result.frequency|length }})</summary>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Word</th>
+                            <th>Count</th>
+                        </tr>
+                        </thead>
+                        {% for word, count in result.frequency.items() %}
+                        <tr>
+                            <td>{{ word }}</td>
+                            <td>{{ count }}</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </details>
+                <details>
+                    <summary>Text</summary>
+                    <p>{{ result.text }}</p>
+                </details>
+            </div>
+        </div>
+
+        {% endif %}
+    </section>
+    <section>
+        {% if error %}
+            <div id="error">{{error.message}}</div>
+        {% endif %}
+    </section>
+</main>
+</body>
+</html>

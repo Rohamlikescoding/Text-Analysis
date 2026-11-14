@@ -24,10 +24,12 @@
     <div id="input-tabs">
         <input class="act-radio" type="radio" name="act" id="act-1" {% if active_tab!='file' %} checked {% endif %} value="text"/>
         <input class="act-radio" type="radio" name="act" id="act-2" {% if active_tab=='file' %} checked {% endif %} value="file"/>
+        <input class="act-radio" type="radio" name="act" id="act-3" {% if active_tab=='history' %} checked {% endif %} value="history"/>
 
         <div class="act-rail" data-testid="act-rail">
             <label for="act-1">Text</label>
             <label for="act-2">File</label>
+            <label for="act-3">History</label>
         </div>
         <div class="act-panels">
             <article class="act-panel" id="act-panel-1">
@@ -49,7 +51,7 @@
                         <label><input type="radio" name="statistic" value="summary" /> Summary</label>
                     </div>
                     <div class="frequent">
-                        <label>Most Frequent : <input type="number" name="frequent" value="5" min="1" max="10"/></label>
+                        <label>Most Frequent words: <input type="number" name="frequent" value="5" min="1" max="10"/></label>
                     </div>
                     <button type="submit">Send</button>
                 </form>
@@ -72,11 +74,30 @@
                         <label><input type="radio" name="statistic" value="summary" /> Summary</label>
                     </div>
                     <div class="frequent">
-                        <label>Frequent  <input type="number" name="frequent" value="5" min="1" max="10"/></label>
+                        <label>Most frequent words:  <input type="number" name="frequent" value="5" min="1" max="10"/></label>
                     </div>
                     <button type="submit">Upload</button>
                 </form>
+            </article>
+            <article class="act-panel" id="act-panel-3">
+                <h3>Text analysis history</h3>
 
+                {% for result in history %}
+                <div class="card">
+                    <h3>{{result.id}}</h3>
+                    <p>{{result.raw_text}}</p>
+                    <div class="summary-cards">
+                        <div class="summary-card">
+                            <span class="summary-value">{{ result.word_count }}</span>
+                            <span class="summary-label">Words</span>
+                        </div>
+                        <div class="summary-card">
+                            <span class="summary-value">{{ result.character_count }}</span>
+                            <span class="summary-label">characters</span>
+                        </div>
+                    </div>
+                </div> 
+                {% endfor %}
             </article>
         </div>
 

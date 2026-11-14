@@ -69,7 +69,7 @@ main {
 .act-rail {
     position: relative;
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 4px;
     padding: 4px;
     border-radius: 999px;
@@ -85,18 +85,24 @@ main {
     top: 4px;
     bottom: 4px;
     left: 4px;
-    width: calc((100% - 12px) / 2); /* 8px padding + 4px gap */
+    width: calc((100% - 12px) / 3); /* 8px padding + 4px gap */
     border-radius: 999px;
     background: linear-gradient(135deg, var(--green), var(--green-light));
     box-shadow: 0 8px 20px -8px var(--green);
     transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-#act-2:checked ~ .act-rail::before {
+#act-2:checked ~ .act-rail::before{
     transform: translateX(calc(100% + 4px));
+    background: linear-gradient(135deg, var(--green-light), var(--green-light));
+}
+
+#act-3:checked ~ .act-rail::before {
+    transform: translateX(calc(200% + 4px));
     background: linear-gradient(135deg, var(--green-light), var(--green));
 
 }
+
 
 .act-rail label {
     position: relative; /* sits above the pill */
@@ -117,13 +123,15 @@ main {
 
 /* active label text */
 #act-1:checked ~ .act-rail label[for="act-1"],
-#act-2:checked ~ .act-rail label[for="act-2"] {
+#act-2:checked ~ .act-rail label[for="act-2"],
+#act-3:checked ~ .act-rail label[for="act-3"]  {
     color: #fff;
 }
 
 /* keyboard focus (radios are visually hidden) */
 #act-1:focus-visible ~ .act-rail label[for="act-1"],
-#act-2:focus-visible ~ .act-rail label[for="act-2"] {
+#act-2:focus-visible ~ .act-rail label[for="act-2"],
+#act-3:focus-visible ~ .act-rail label[for="act-3"] {
     outline: 3px solid var(--green-dark);
     outline-offset: 2px;
 }
@@ -143,7 +151,8 @@ main {
 }
 
 #act-1:checked ~ .act-panels #act-panel-1,
-#act-2:checked ~ .act-panels #act-panel-2 {
+#act-2:checked ~ .act-panels #act-panel-2,
+#act-3:checked ~ .act-panels #act-panel-3 {
     display: block;
     animation: fade-in 0.3s ease;
 }
@@ -164,40 +173,7 @@ main {
     color: var(--green-dark);
 }
 
-.act-panel p {
-    margin: 0 0 20px;
-    line-height: 1.65;
-    color: var(--muted);
-}
 
-.act-facts {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 12px;
-}
-
-.act-facts li {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    padding: 14px;
-    border-radius: 12px;
-    background: #f0fdf4;
-    text-align: center;
-}
-
-.act-facts b {
-    font-size: 1.6rem;
-    color: var(--green);
-}
-
-.act-facts span {
-    font-size: 0.8rem;
-    color: var(--muted);
-}
 
 /* ---------- result ---------- */
 #result:not(:empty) {
@@ -299,9 +275,6 @@ article button {
 .result-header{
     display: flex;
     justify-content: space-between;
-}
-.result-header h3{
-    color: #16a34a;
 }
 .card {
     margin-top: 24px;

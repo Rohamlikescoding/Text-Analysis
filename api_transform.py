@@ -1,3 +1,4 @@
+from database import add_history
 from text_analysis_utils import text_transform, calculate, handle_summary
 
 def apply_transform(text, transform):
@@ -8,6 +9,9 @@ def apply_transform(text, transform):
 
 def run_actions(text, transform, statistic, frequent = 5):
     out = {}
+    result = calculate(text, frequent)
+    add_history(text, result["words"], result["characters_with_space"])
+
     if transform:
         text = apply_transform(text, transform)
         out["transformed"] = text

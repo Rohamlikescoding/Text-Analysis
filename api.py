@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI, File, Form, Request, UploadFile
@@ -5,16 +6,23 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
 from api_transform import run_actions
+from database import create_database, get_history
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    create_database()
+    yield
+
+app = FastAPI(lifespan=lifespan)
 
 BASE_DIR = Path(__file__).resolve().parent
 templates = Jinja2Templates(directory=BASE_DIR / "templates")
 
+history_result = get_history()
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
-    return templates.TemplateResponse(request, "index.html", {"name": "world"})
+    return templates.TemplateResponse(request, "index.html", {"name": "world","history": get_history()})
 
 
 @app.post("/analyze/text", response_class=HTMLResponse)
@@ -25,17 +33,19 @@ async def text_result(
     statistic: str = Form(""),
     frequent: int = Form(""),
 ):
-    ctx = {"name": "world", "active_tab": "text"}
+    ctx = {"name": "world", "active_tab": "text", "history": get_history()}
     if not transform and not statistic:
         ctx["error"] = {"message": "Select at least one action"}
     else:
         ctx.update(run_actions(text, transform, statistic, frequent))
+        history_result = get_history()
+ 
     return templates.TemplateResponse(request, "index.html", ctx)
 
 @app.post("/analyze/file", response_class=HTMLResponse)
 async def analyze_file(request: Request, file: UploadFile = File(...),transform: str = Form(""),
     statistic: str = Form(""), frequent: int = Form("")):
-    ctx = {"name": "world", "active_tab": "file","file_name": file.filename}
+    ctx = {"name": "world", "active_tab": "file","file_name": file.filename, "history": get_history()}
 
     raw = await file.read()
     try:
@@ -48,4 +58,6 @@ async def analyze_file(request: Request, file: UploadFile = File(...),transform:
         ctx["error"] = {"message": "Select at least one action"}
     else:
         ctx.update(run_actions(text, transform, statistic, frequent))
+        history_result = get_history()
+
     return templates.TemplateResponse(request, "index.html", ctx)

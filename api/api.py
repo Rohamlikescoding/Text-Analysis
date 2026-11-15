@@ -5,8 +5,8 @@ from fastapi import FastAPI, File, Form, Request, UploadFile
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
-from api_transform import run_actions
-from database import create_database, get_history
+from api.api_transform import run_actions
+from database.database import create_database, get_history
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -15,10 +15,9 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
-BASE_DIR = Path(__file__).resolve().parent
+BASE_DIR = Path(__file__).resolve().parent.parent
 templates = Jinja2Templates(directory=BASE_DIR / "templates")
 
-history_result = get_history()
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
@@ -31,20 +30,20 @@ async def text_result(
     text: str = Form(...),
     transform: str = Form(""),
     statistic: str = Form(""),
-    frequent: int = Form(""),
+    frequent: int = Form(5, ge=1, le=10),
 ):
     ctx = {"name": "world", "active_tab": "text", "history": get_history()}
     if not transform and not statistic:
         ctx["error"] = {"message": "Select at least one action"}
     else:
         ctx.update(run_actions(text, transform, statistic, frequent))
-        history_result = get_history()
+        ctx["history"] = get_history()
  
     return templates.TemplateResponse(request, "index.html", ctx)
 
 @app.post("/analyze/file", response_class=HTMLResponse)
 async def analyze_file(request: Request, file: UploadFile = File(...),transform: str = Form(""),
-    statistic: str = Form(""), frequent: int = Form("")):
+    statistic: str = Form(""), frequent: int = Form(5, ge=1, le=10)):
     ctx = {"name": "world", "active_tab": "file","file_name": file.filename, "history": get_history()}
 
     raw = await file.read()
@@ -58,6 +57,6 @@ async def analyze_file(request: Request, file: UploadFile = File(...),transform:
         ctx["error"] = {"message": "Select at least one action"}
     else:
         ctx.update(run_actions(text, transform, statistic, frequent))
-        history_result = get_history()
+        ctx["history"] = get_history()
 
     return templates.TemplateResponse(request, "index.html", ctx)

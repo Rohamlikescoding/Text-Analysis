@@ -1,5 +1,5 @@
-from database import add_history
-from text_analysis_utils import text_transform, calculate, handle_summary
+from database.database import add_history
+from utils.text_analysis_utils import text_transform, calculate, handle_summary
 
 def apply_transform(text, transform):
     args = [False] * 4

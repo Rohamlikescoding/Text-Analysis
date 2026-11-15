@@ -1,4 +1,4 @@
-from text_analysis_utils import calculate
+from utils.text_analysis_utils import calculate
 
 def read_file(file_url):
     with open(file_url, "r", encoding="utf-8") as file:

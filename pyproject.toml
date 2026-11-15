@@ -1,7 +1,20 @@
+[project]
+name = "Text_Analysis"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "click>=8.5.1",
+    "fastapi>=0.163.1",
+    "jinja2>=3.1.6",
+    "python-multipart>=0.0.33",
+    "uvicorn>=0.54.0",
+]
+
 [tool.fastapi]
-entrypoint = "api:app"
+entrypoint = "api.api:app"
 
 [dependency-groups]
 dev = [
+    "click>=8.5.1",
     "python-multipart>=0.0.33",
 ]

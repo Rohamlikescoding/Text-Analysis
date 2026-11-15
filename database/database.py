@@ -37,6 +37,6 @@ def add_history(raw_text: str, word_count: int, character_count: int):
 def get_history():
     connection = get_connection()
     try:
-        return [dict(r) for r in connection.execute("SELECT * FROM history")]
+        return [dict(r) for r in connection.execute("SELECT * FROM history ORDER BY id DESC LIMIT 50")]
     finally:
         connection.close()

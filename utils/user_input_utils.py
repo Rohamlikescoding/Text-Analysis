@@ -1,8 +1,8 @@
 import sys
 from pathlib import Path
 
-from file_handling_utils import handle_file ,read_file
-from text_analysis_utils import calculate
+from utils.file_handling_utils import handle_file ,read_file
+from utils.text_analysis_utils import calculate
 
 def handle_user_text_input():
     print("Enter your text (Press Ctrl+D on Linux/macOS or Ctrl+Z on Windows to stop):")
@@ -31,6 +31,6 @@ def handle_user_input():
             else:
                 return continued
         elif option == "3":
-            return calculate(read_file(Path(__file__).parent / "default.txt"))
+            return calculate(read_file(Path(__file__).parent.parent / "default.txt"))
         else:
             print("Invalid option! please choose correctly!")

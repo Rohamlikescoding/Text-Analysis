@@ -1,4 +1,7 @@
 .idea
 __pycache__/
 .venv/
+.env
+.vscode/
 text-history.db
+user.db

@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <style>
+        {% include 'styles.css' %}
+    </style>
+
+    <title>Text Analysis</title>
+</head>
+<body>
+<header>
+    <nav>
+        <h2>
+
+            Text analysis
+        </h2>
+    </nav>
+</header>
+<main>
+    <div id="input-tabs">
+        <input class="act-radio" type="radio" name="act" id="act-1" {% if active_tab!='signup' %} checked {% endif %} value="login"/>
+        <input class="act-radio" type="radio" name="act" id="act-2" {% if active_tab=='signup' %} checked {% endif %} value="signup"/>
+
+        <div class="act-rail" data-testid="act-rail">
+            <label for="act-1">Login</label>
+            <label for="act-2">Signup</label>
+        </div>
+        <div class="act-panels">
+            <article class="act-panel" id="act-panel-1">
+                <h3>Login</h3>
+                <form class="text-form" method="post" action="/login">
+                    <label for="username">User name:</label>
+                    <input type="text" id="username" name="username" placeholder="Enter your username" required></input>
+                    <label for="password">Password::</label>
+                    <input type="text" id="password" name="password" placeholder="Enter your password" min="6" required></input>
+                    <label><input type="checkbox" name="save_login" value="" checked />Keep me logged in</label>
+                    <button type="submit">Send</button>
+                </form>
+            </article>
+            <article class="act-panel" id="act-panel-2">
+                <h3>Register</h3>
+                <form class="file-form" method="post" action="/register" enctype="multipart/form-data">
+                    <label for="full_name">Full name</label>
+                    <input type="text" id="full_name" name="full_name" placeholder="Enter your name" required/>
+                    
+                    <label for="username">User name</label>
+                    <input type="text" id="username" name="username" placeholder="Enter your username" required/>
+
+                    <label for="password">password</label>
+                    <input type="text" id="password" name="password" placeholder="Enter your password" required min="6"/>
+
+                    <button type="submit">Upload</button>
+                </form>
+            </article>
+        </div>
+
+    </div>
+    
+    <section>
+        {% if error %}
+            <div id="error">{{error.message}}</div>
+        {% endif %}
+    </section>
+</main>
+</body>
+</html>

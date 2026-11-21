@@ -2,18 +2,20 @@ from datetime import datetime, timedelta, timezone
 
 from typing import Optional
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordBearer
 import jwt
 from jwt import InvalidTokenError
 from pwdlib import PasswordHash
 
+
+from api.exceptions import NotAuthenticated
 from database.database import get_user
 from api.schemas import UserPublic
 from api.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login", auto_error=False)
 
 
 password_hash = PasswordHash.recommended()
@@ -32,13 +34,17 @@ def create_access_token(data: dict, expires_minutes: int = ACCESS_TOKEN_EXPIRE_M
 
 def authenticate_user(username: str, password: str) -> Optional[dict]:
     user = get_user(username)
-
-    print("user auth", user)
     if not user or not verify_password(password, user["hashed_password"]):
         return None
     return user
 
-async def get_current_user(token: str = Depends(oauth2_scheme)) -> UserPublic:
+async def get_current_user(request: Request) -> UserPublic:
+    token = request.cookies.get("access_token")
+    if not token and request.headers.get("Authorization", "").startswith("Bearer "):
+        token = request.headers["Authorization"][7:]
+    if not token:
+        raise NotAuthenticated("Please log in to continue.")
+
     cred_exc = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",

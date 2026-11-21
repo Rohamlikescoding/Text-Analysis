@@ -10,14 +10,22 @@
     <title>Text Analysis</title>
 </head>
 <body>
-<header>
-    <nav>
+    <header>
+        <section>
+            {% if error %}
+                <div id="error">{{error.message}}</div>
+            {% endif %}
+        </section>
+        <nav>
         <h2>
 
             Text analysis
         </h2>
 
-        <h2>Hello {{name}}</h2>
+        <div id="user">
+            <h2 id="logout">{{name}}</h2>
+            <a href="/logout" class="tooltiptext">Logout</a>
+        </div>
     </nav>
 </header>
 <main>
@@ -193,11 +201,7 @@
 
         {% endif %}
     </section>
-    <section>
-        {% if error %}
-            <div id="error">{{error.message}}</div>
-        {% endif %}
-    </section>
+    
 </main>
 </body>
 </html>

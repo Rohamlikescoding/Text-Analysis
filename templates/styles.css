@@ -11,6 +11,9 @@
 * {
     box-sizing: border-box;
 }
+a{
+    text-decoration: none;
+}
 
 body {
     margin: 0;
@@ -359,3 +362,26 @@ article button {
     font-weight: 600;
     cursor: pointer;
 }
+
+#logout{
+    color: var(--green);
+    text-decoration: none;
+}
+
+#user:hover .tooltiptext {
+  visibility: visible;
+}
+
+.tooltiptext {
+  visibility: hidden; /* Hidden by default */
+  width: 130px;
+  background-color: #14532d41;
+  color: #ffffff;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+  position: absolute;
+  z-index: 1; /* Ensure tooltip is displayed above content */
+}
+
+/* Show the tooltip text on hover */

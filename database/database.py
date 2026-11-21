@@ -67,7 +67,6 @@ def get_user(username: str) -> Optional[dict]:
             "SELECT username, hashed_password, full_name FROM users WHERE username = ?",
             (username,),
         ).fetchone()
-        print("row",username)
     finally:
         connection.close()
     if row:

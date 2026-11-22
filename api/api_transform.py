@@ -7,10 +7,10 @@ def apply_transform(text, transform):
     args[idx] = transform
     return text_transform(text, *args)
 
-def run_actions(text, transform, statistic, frequent = 5):
+def run_actions(text, transform, statistic, frequent = 5, user = None):
     out = {}
     result = calculate(text, frequent)
-    add_history(text, result["words"], result["characters_with_space"])
+    add_history(text, result["words"], result["characters_with_space"], user)
 
     if transform:
         text = apply_transform(text, transform)

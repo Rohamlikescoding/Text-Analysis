@@ -48,7 +48,7 @@ async def home(request: Request):
 async def analysis(
     request: Request,error: str| None = None,  user: UserPublic = Depends(get_current_user)):
     
-    ctx = {"name": user.full_name, "active_tab": "text", "history": get_history()}
+    ctx = {"name": user.full_name, "active_tab": "text", "history": get_history(user.username)}
     if error:
         ctx["error"] = {"message": error}
         
@@ -64,12 +64,12 @@ async def text_result(
     frequent: int = Form(5, ge=1, le=10),
     user : UserPublic =Depends(get_current_user)
 ):   
-        ctx = {"name": user.full_name, "active_tab": "text", "history": get_history()}
+        ctx = {"name": user.full_name, "active_tab": "text", "history": get_history(user.username)}
         if not transform and not statistic:
             ctx["error"] = {"message": "Select at least one action"}
         else:
-            ctx.update(run_actions(text, transform, statistic, frequent))
-            ctx["history"] = get_history()
+            ctx.update(run_actions(text, transform, statistic, frequent,user.username))
+            ctx["history"] = get_history(user.username)
     
         return templates.TemplateResponse(request, "index.html", ctx)
     
@@ -82,7 +82,7 @@ async def analyze_file(
     frequent: int = Form(5, ge=1, le=10),
     user : UserPublic =Depends(get_current_user)
     ):
-        ctx = {"name": "world", "active_tab": "file","file_name": file.filename, "history": get_history()}
+        ctx = {"name": "world", "active_tab": "file","file_name": file.filename, "history": get_history(user.username)}
 
         raw = await file.read()
         try:
@@ -94,8 +94,8 @@ async def analyze_file(
         if not transform and not statistic:
             ctx["error"] = {"message": "Select at least one action"}
         else:
-            ctx.update(run_actions(text, transform, statistic, frequent))
-            ctx["history"] = get_history()
+            ctx.update(run_actions(text, transform, statistic, frequent, user.username))
+            ctx["history"] = get_history(user.username)
 
         return templates.TemplateResponse(request, "index.html", ctx)
 

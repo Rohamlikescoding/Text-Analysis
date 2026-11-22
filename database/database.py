@@ -27,7 +27,9 @@ def create_databases():
         created_at TEXT,
         raw_text TEXT,
         word_count INTEGER,
-        character_count INTEGER)""")
+        character_count INTEGER,
+        username TEXT)
+        """)
         connection.commit()
     finally:
         connection.close()
@@ -44,19 +46,19 @@ def create_databases():
     finally:
         user_connection.close()
 
-def add_history(raw_text: str, word_count: int, character_count: int):
+def add_history(raw_text: str, word_count: int, character_count: int, user):
     created_at = datetime.now(timezone.utc).isoformat()
     connection = get_connection()
     try:
-        connection.execute("""INSERT INTO history(created_at, raw_text, word_count, character_count) VALUES (?, ?, ?, ? )""", (created_at, raw_text,word_count, character_count))
+        connection.execute("""INSERT INTO history(created_at, raw_text, word_count, character_count, username) VALUES (?, ?, ?, ? ,?)""", (created_at, raw_text,word_count, character_count, user))
         connection.commit()
     finally:
         connection.close()
 
-def get_history():
+def get_history(user):
     connection = get_connection()
     try:
-        return [dict(r) for r in connection.execute("SELECT * FROM history ORDER BY id DESC LIMIT 50")]
+        return [dict(r) for r in connection.execute("SELECT * FROM history WHERE username =? ORDER BY id DESC LIMIT 50 ",(user,))]
     finally:
         connection.close()
 

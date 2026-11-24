@@ -2,7 +2,7 @@ from datetime import datetime, timedelta, timezone
 
 from typing import Optional
 
-from fastapi import Depends, HTTPException, Request, status
+from fastapi import HTTPException, Request, status
 from fastapi.security import OAuth2PasswordBearer
 import jwt
 from jwt import InvalidTokenError
@@ -14,8 +14,6 @@ from database.database import get_user
 from api.schemas import UserPublic
 from api.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login", auto_error=False)
 
 
 password_hash = PasswordHash.recommended()

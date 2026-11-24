@@ -16,7 +16,7 @@ from fastapi.templating import Jinja2Templates
 from api.api_transform import run_actions
 from api.exceptions import register_exception_handlers
 from api.schemas import Token, UserCreate, UserPublic
-from api.security import authenticate_user, create_access_token, get_current_user, hash_password
+from api.security import authenticate_user, create_access_token, get_current_user, hash_password, strong_password
 from database.database import create_database , create_user, get_history
 
 @asynccontextmanager
@@ -35,6 +35,8 @@ register_exception_handlers(app)
 BASE_DIR = Path(__file__).resolve().parent.parent
 templates = Jinja2Templates(directory=BASE_DIR / "templates")
 
+def redirect_error(message: str):
+    return RedirectResponse(url=f"/login?error={quote(message)}", status_code=303)
 
 @app.get("/")
 async def home(request: Request):
@@ -101,21 +103,27 @@ async def analyze_file(
 
 @app.post("/register", status_code=201, summary="Create a new user")
 def register_user(
-    username: str = Form(..., min_length=3, max_length=20),
-    password: str = Form(..., min_length=6),
+    username: str = Form(...),
+    password: str = Form(...),
     full_name: str = Form(...),
     ):
+
+    username = username.strip()
+    if not 3 <= len(username) <= 20:
+        return redirect_error("Username must be between 3 and 20 characters")
+     
+    if not strong_password(password):
+        return redirect_error("Enter strong password, needs to contain at least 6 digits length, uppercase, lowercase, digits and special symbols")
+    
     hashed = hash_password(password)
     if not create_user(username, hashed, full_name):
-        return RedirectResponse(
-        url=f"/login?error={quote('Username already taken')}",
-        status_code=303,
-    )
-    return RedirectResponse(url="/", status_code=303)
+        return redirect_error("Username already taken")
+    
+    return RedirectResponse(url=f"/login?success={quote("Acount Created successfully. Use your username and password to login")}", status_code=303)
 
 @app.get("/login", response_class=HTMLResponse)
-async def login_page(request: Request, error: str | None = None):
-    return templates.TemplateResponse(request, "login.html", {"error": error})
+async def login_page(request: Request, error: str | None = None, success: str | None = None):
+    return templates.TemplateResponse(request, "login.html", {"error": error ,"success": success})
 
 @app.post("/login")
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):

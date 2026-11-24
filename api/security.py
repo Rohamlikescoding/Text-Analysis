@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta, timezone
 
+import re
 from typing import Optional
 
 from fastapi import HTTPException, Request, status
@@ -15,11 +16,20 @@ from api.schemas import UserPublic
 from api.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 
 
+def strong_password(password:str ) -> bool:
+    reg = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$#%])[A-Za-z\d@$#%]{6,20}$"
+    pat = re.compile(reg)
+    mat = re.search(pat, password)
+    if mat:
+        return True
+    else:
+        False
+    
 
 password_hash = PasswordHash.recommended()
-
 def hash_password(password: str) -> str:
     return password_hash.hash(password)
+
 
 def verify_password(plain: str, hashed: str) -> bool:
     return password_hash.verify(plain, hashed)

@@ -27,9 +27,11 @@ async def not_authenticated_handler(request: Request, exc: NotAuthenticated):
     response.delete_cookie("access_token")
     return response
 
-async def http_exception_redirect_handler(request: Request, exc: StarletteHTTPException):
+
+async def http_exception_redirect_handler(
+    request: Request, exc: StarletteHTTPException
+):
     wants_html = "text/html" in request.headers.get("accept", "")
-        
 
     if exc.status_code == 405 and wants_html:
         if request.cookies.get("access_token"):
@@ -37,15 +39,14 @@ async def http_exception_redirect_handler(request: Request, exc: StarletteHTTPEx
                 url=f"/analyze?error={quote("That page can't be opened directly")}",
                 status_code=status.HTTP_303_SEE_OTHER,
             )
-        
+
         return RedirectResponse(
-                url=f"/login?error={quote('Please log in to continue.')}",
-                status_code=status.HTTP_303_SEE_OTHER,
-            )
+            url=f"/login?error={quote('Please log in to continue.')}",
+            status_code=status.HTTP_303_SEE_OTHER,
+        )
 
     # everything else (404, your own HTTPExceptions, API clients) behaves as before
     return await http_exception_handler(request, exc)
-
 
 
 def register_exception_handlers(app: FastAPI) -> None:

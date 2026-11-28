@@ -178,7 +178,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
 
 
 @app.get("/logout", response_model=UserPublic, summary="Logout")
-def read_me(current_user: UserPublic = Depends(get_current_user)):
+def logout(current_user: UserPublic = Depends(get_current_user)):
     response = RedirectResponse(url="/", status_code=303)
     response.delete_cookie("access_token")
     return response
